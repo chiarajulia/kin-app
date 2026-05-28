@@ -1,0 +1,1468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>KIN — Build the Habit</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --teal:    #00B8A9;
+  --teal-d:  #009B8D;
+  --teal-dd: #007A70;
+  --teal-p:  #DFFAF7;
+  --yellow:  #FFE234;
+  --yellow-d:#EDD000;
+  --yellow-p:#FFFBD6;
+  --pink:    #FF5CA8;
+  --pink-d:  #E0468F;
+  --pink-p:  #FFE5F2;
+  --ink:     #091F1D;
+  --white:   #FFFFFF;
+  --bg:      #F2FFFE;
+  --surface: #FFFFFF;
+  --muted:   #5B8C87;
+  --border:  #BDE8E4;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;}
+.app{max-width:430px;margin:0 auto;min-height:100vh;background:var(--bg);position:relative;box-shadow:0 0 80px rgba(0,184,169,.12);}
+
+/* SCREENS */
+.screen{display:none;flex-direction:column;min-height:100vh;animation:up .38s cubic-bezier(.22,1,.36,1);}
+.screen.active{display:flex;}
+@keyframes up{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
+
+/* HERO */
+.hero{background:var(--teal);padding:52px 26px 48px;position:relative;overflow:hidden;}
+.hero-eyebrow{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--yellow);font-weight:700;margin-bottom:12px;}
+.hero-title{font-size:36px;font-weight:800;line-height:1.1;color:var(--white);margin-bottom:10px;}
+.hero-title em{color:var(--yellow);font-style:normal;}
+.hero-sub{font-size:14px;line-height:1.7;color:rgba(255,255,255,.80);}
+
+/* CARD LIFT */
+.card-lift{background:var(--surface);border-radius:28px 28px 0 0;margin-top:-22px;padding:30px 22px 28px;flex:1;position:relative;z-index:2;box-shadow:0 -6px 30px rgba(0,184,169,.10);}
+
+/* STEP LABEL */
+.step-label{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:22px;display:flex;align-items:center;gap:8px;}
+.step-dot{width:6px;height:6px;border-radius:50%;background:var(--pink);flex-shrink:0;}
+
+/* FIELDS */
+.field{margin-bottom:16px;}
+.field label{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:7px;letter-spacing:.3px;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.input-wrap{position:relative;}
+.input-pre{position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:15px;color:var(--muted);font-weight:700;pointer-events:none;}
+.input-suf{position:absolute;right:13px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--muted);font-weight:700;pointer-events:none;}
+input[type=number],input[type=text],select{width:100%;padding:13px 14px;border:2px solid var(--border);border-radius:14px;font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:600;color:var(--ink);background:var(--bg);outline:none;transition:border .18s,background .18s;-webkit-appearance:none;}
+input.pre{padding-left:28px;}
+input.suf{padding-right:42px;}
+input:focus,select:focus{border-color:var(--teal);background:var(--white);}
+select{cursor:pointer;}
+
+.field-info-link{background:none;border:none;padding:0;font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;font-weight:700;color:var(--teal-dd);cursor:pointer;text-decoration:underline;text-underline-offset:2px;margin-top:6px;display:inline-block;}
+.field-info-link:hover{color:var(--teal);}
+
+/* INFO BUTTON */
+.info-btn{width:18px;height:18px;border-radius:50%;background:var(--border);border:none;cursor:pointer;font-size:11px;font-weight:800;color:var(--muted);display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .18s;font-family:'Plus Jakarta Sans',sans-serif;}
+.info-btn:hover{background:var(--teal);color:var(--yellow);}
+
+/* EXPENSE TOGGLE */
+.expense-toggle{display:flex;background:var(--bg);border-radius:12px;padding:4px;border:2px solid var(--border);margin-bottom:10px;}
+.expense-toggle button{flex:1;padding:8px;border:none;border-radius:9px;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:700;color:var(--muted);background:transparent;transition:all .18s;}
+.expense-toggle button.active{background:var(--teal);color:var(--yellow);}
+
+/* RANGE */
+.range-wrap{padding-top:4px;}
+input[type=range]{-webkit-appearance:none;width:100%;height:5px;background:var(--border);border-radius:3px;outline:none;border:none;padding:0;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--teal);border:3px solid var(--yellow);cursor:pointer;box-shadow:0 2px 10px rgba(0,184,169,.35);}
+.range-labels{display:flex;justify-content:space-between;margin-top:5px;font-size:11px;color:var(--muted);font-weight:600;}
+
+/* GOAL CARDS */
+.goal-grid{display:flex;flex-direction:column;gap:10px;}
+.goal-card{background:var(--bg);border:2px solid var(--border);border-radius:16px;padding:16px 18px;display:flex;align-items:flex-start;gap:14px;cursor:pointer;transition:all .2s;}
+.goal-card:hover,.goal-card.selected{border-color:var(--teal);background:var(--teal-p);}
+.goal-icon{font-size:26px;flex-shrink:0;margin-top:2px;}
+.goal-text{flex:1;}
+.goal-text h4{font-size:14px;font-weight:700;margin-bottom:2px;}
+.goal-text p{font-size:11px;color:var(--muted);line-height:1.4;margin-bottom:6px;}
+.goal-info-link{background:none;border:none;padding:0;font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;font-weight:700;color:var(--teal-dd);cursor:pointer;text-decoration:underline;text-underline-offset:2px;display:block;}
+.goal-info-link:hover{color:var(--teal);}
+.goal-right{display:flex;align-items:center;gap:6px;flex-shrink:0;}
+.goal-check{width:22px;height:22px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;transition:all .2s;color:transparent;font-size:12px;flex-shrink:0;margin-top:2px;}
+.goal-card.selected .goal-check{background:var(--teal);border-color:var(--teal);color:var(--yellow);}
+
+/* HOUSE FIELDS */
+.house-fields{margin-top:14px;padding-top:14px;border-top:2px dashed var(--border);display:none;}
+.house-fields.show{display:block;}
+
+/* MOTIVATION BANNER */
+.motivation-banner{background:var(--yellow-p);border:2px solid rgba(255,226,52,.6);border-radius:16px;padding:16px 18px;margin-bottom:20px;display:flex;gap:12px;align-items:flex-start;}
+.motivation-banner .mot-icon{font-size:22px;flex-shrink:0;}
+.motivation-banner p{font-size:13px;line-height:1.55;color:var(--ink);}
+.motivation-banner strong{color:var(--teal-dd);}
+
+/* BUTTONS */
+.btn{width:100%;padding:16px;border:none;border-radius:50px;font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:800;cursor:pointer;transition:all .2s;letter-spacing:.2px;}
+.btn-pink{background:var(--pink);color:var(--white);box-shadow:0 4px 18px rgba(255,92,168,.35);}
+.btn-pink:hover{background:var(--pink-d);transform:translateY(-2px);box-shadow:0 8px 26px rgba(255,92,168,.4);}
+.btn-teal{background:var(--teal);color:var(--yellow);box-shadow:0 4px 14px rgba(0,184,169,.3);}
+.btn-teal:hover{background:var(--teal-d);transform:translateY(-2px);}
+.btn-ghost{background:transparent;color:var(--muted);border:2px solid var(--border);margin-top:10px;border-radius:50px;}
+.btn-ghost:hover{border-color:var(--teal);color:var(--teal);}
+
+/* TOP NAV */
+.topnav{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 12px;border-bottom:2px solid var(--border);background:var(--surface);position:sticky;top:0;z-index:100;}
+.logo{font-size:20px;font-weight:800;color:var(--teal);letter-spacing:.5px;}
+.logo span{color:var(--pink);}
+.tabs{display:flex;gap:4px;}
+.tab{padding:6px 13px;border-radius:20px;font-size:11px;font-weight:700;border:none;background:none;cursor:pointer;color:var(--muted);font-family:'Plus Jakarta Sans',sans-serif;transition:all .18s;}
+.tab.active{background:var(--teal);color:var(--yellow);}
+
+/* DASH */
+.dash-scroll{flex:1;overflow-y:auto;padding-bottom:90px;}
+
+/* FIRE CARD — no circles, clean */
+.fire-card{margin:14px;background:var(--teal);border-radius:22px;padding:26px 22px;color:var(--white);}
+.fire-lbl{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--yellow);font-weight:700;margin-bottom:5px;}
+.fire-num{font-size:40px;font-weight:800;line-height:1.05;margin-bottom:4px;}
+.fire-sub{font-size:12px;color:rgba(255,255,255,.65);margin-bottom:20px;}
+.goal-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.15);border-radius:20px;padding:5px 12px;font-size:11px;font-weight:700;color:var(--white);margin-bottom:14px;}
+.prog-track{background:rgba(255,255,255,.22);border-radius:6px;height:8px;margin-bottom:8px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--yellow-d),var(--yellow));transition:width 1.3s cubic-bezier(.22,1,.36,1);position:relative;}
+.prog-fill::after{content:'';position:absolute;right:0;top:50%;transform:translateY(-50%);width:14px;height:14px;border-radius:50%;background:var(--yellow);box-shadow:0 0 12px rgba(255,226,52,.8);}
+.prog-stats{display:flex;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.65);}
+.prog-stats strong{color:var(--white);}
+
+/* STAT CARDS — clean labels */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 14px;margin-bottom:12px;}
+.stat{background:var(--surface);border-radius:16px;padding:16px 14px;border:2px solid var(--border);}
+.stat-icon{font-size:20px;margin-bottom:6px;}
+.stat-val{font-size:20px;font-weight:800;color:var(--ink);line-height:1;margin-bottom:3px;}
+.stat-lbl{font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.8px;}
+.stat-sub{font-size:10px;color:var(--muted);font-weight:500;margin-top:2px;}
+.stat.s-yellow{background:var(--yellow-p);border-color:rgba(255,226,52,.5);}
+.stat.s-pink{background:var(--pink-p);border-color:rgba(255,92,168,.3);}
+.stat.s-teal{background:var(--teal-p);border-color:rgba(0,184,169,.3);}
+
+/* 10-YR PROJECTION — no circles */
+.proj-band{margin:0 14px 12px;background:var(--ink);border-radius:20px;padding:22px 20px;}
+.proj-band-lbl{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--yellow);font-weight:700;margin-bottom:6px;}
+.proj-band-headline{font-size:22px;font-weight:800;color:var(--white);line-height:1.2;margin-bottom:4px;}
+.proj-band-headline em{color:var(--yellow);font-style:normal;}
+.proj-band-sub{font-size:12px;color:rgba(255,255,255,.55);margin-bottom:18px;}
+.proj-bars{display:flex;align-items:flex-end;gap:6px;height:80px;margin-bottom:12px;}
+.proj-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end;}
+.proj-bar{width:100%;border-radius:5px 5px 0 0;background:rgba(255,255,255,.15);transition:height 1s cubic-bezier(.22,1,.36,1);}
+.proj-bar.hi{background:linear-gradient(180deg,var(--yellow),var(--yellow-d));}
+.proj-bar-yr{font-size:9px;color:rgba(255,255,255,.45);font-weight:700;}
+.proj-bar-val{font-size:9px;color:rgba(255,255,255,.65);font-weight:700;}
+.proj-miss{background:rgba(255,92,168,.15);border:1px solid rgba(255,92,168,.3);border-radius:12px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;}
+.proj-miss-lbl{font-size:12px;color:rgba(255,255,255,.65);}
+.proj-miss-val{font-size:18px;font-weight:800;color:var(--pink);}
+
+/* LEARN SECTION */
+.learn-card{margin:0 14px 12px;background:var(--surface);border-radius:20px;padding:20px;border:2px solid var(--border);}
+.learn-title{font-size:14px;font-weight:800;margin-bottom:4px;}
+.learn-sub{font-size:12px;color:var(--muted);margin-bottom:14px;}
+.learn-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.learn-item{background:var(--bg);border-radius:14px;padding:14px 12px;cursor:pointer;border:2px solid var(--border);transition:all .2s;}
+.learn-item:hover{border-color:var(--teal);background:var(--teal-p);}
+.learn-item-icon{font-size:22px;margin-bottom:6px;}
+.learn-item-title{font-size:12px;font-weight:700;margin-bottom:2px;}
+.learn-item-tag{font-size:10px;color:var(--muted);font-weight:600;}
+
+/* INSIGHTS SECTION */
+.insights-card{margin:0 14px 12px;background:var(--surface);border-radius:20px;padding:20px;border:2px solid var(--border);}
+.insights-title{font-size:14px;font-weight:800;margin-bottom:4px;}
+.insights-sub{font-size:12px;color:var(--muted);margin-bottom:14px;}
+.insight-item{background:var(--bg);border-radius:14px;padding:14px;margin-bottom:8px;border:2px solid var(--border);}
+.insight-item:last-child{margin-bottom:0;}
+.insight-header{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+.insight-icon{font-size:20px;}
+.insight-name{font-size:13px;font-weight:700;}
+.insight-tag{margin-left:auto;font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;background:var(--teal-p);color:var(--teal-dd);}
+.insight-bar-track{background:var(--border);border-radius:4px;height:6px;margin-bottom:6px;overflow:hidden;}
+.insight-bar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--teal),var(--teal-d));transition:width 1s cubic-bezier(.22,1,.36,1);}
+.insight-desc{font-size:11px;color:var(--muted);line-height:1.5;}
+.disclaimer{font-size:10px;color:var(--muted);font-style:italic;margin-top:12px;line-height:1.5;padding:10px;background:var(--bg);border-radius:10px;}
+
+/* STREAK */
+.streak-card{margin:0 14px 12px;background:var(--surface);border-radius:20px;padding:20px;border:2px solid var(--border);}
+.streak-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+.streak-title{font-size:14px;font-weight:800;}
+.streak-badge{background:var(--teal);color:var(--yellow);padding:4px 12px;border-radius:20px;font-size:12px;font-weight:800;}
+.streak-dots{display:flex;gap:4px;margin-bottom:16px;}
+.sdot{flex:1;aspect-ratio:1;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:var(--muted);background:var(--border);transition:all .3s;}
+.sdot.done{background:var(--teal);color:var(--yellow);}
+.sdot.today{background:var(--pink);color:var(--white);box-shadow:0 3px 12px rgba(255,92,168,.45);}
+
+/* BUDDY */
+.buddy-row{display:flex;align-items:center;gap:12px;background:var(--teal-p);border-radius:14px;padding:14px;border:2px solid rgba(0,184,169,.25);}
+.buddy-avatar{width:42px;height:42px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.buddy-text{flex:1;}
+.buddy-name{font-size:13px;font-weight:700;margin-bottom:2px;}
+.buddy-status{font-size:11px;color:var(--muted);}
+.buddy-btn{background:var(--pink);color:var(--white);border:none;padding:7px 14px;border-radius:20px;font-size:11px;font-weight:800;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s;}
+.buddy-btn:hover{background:var(--pink-d);}
+
+/* SOCIAL */
+.social-card{margin:0 14px 12px;background:var(--teal);border-radius:20px;padding:22px 20px;}
+.social-title{font-size:14px;font-weight:800;color:var(--white);margin-bottom:4px;}
+.social-sub{font-size:12px;color:rgba(255,255,255,.65);margin-bottom:16px;}
+.share-btns{display:flex;flex-direction:column;gap:8px;}
+.share-btn{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:14px;border:none;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;transition:all .2s;text-align:left;}
+.share-btn-icon{font-size:18px;flex-shrink:0;}
+.sb-yellow{background:var(--yellow);color:var(--ink);}
+.sb-yellow:hover{background:var(--yellow-d);}
+.sb-pink{background:var(--pink);color:var(--white);}
+.sb-pink:hover{background:var(--pink-d);}
+.sb-white{background:rgba(255,255,255,.15);color:var(--white);border:2px solid rgba(255,255,255,.25)!important;}
+.sb-white:hover{background:rgba(255,255,255,.25);}
+
+/* FEEDBACK BANNER */
+.feedback-banner{margin:14px 14px 0;background:var(--ink);border-radius:20px;padding:20px;position:relative;}
+.feedback-banner-title{font-size:14px;font-weight:800;color:var(--white);margin-bottom:6px;}
+.feedback-banner-sub{font-size:12px;color:rgba(255,255,255,.65);line-height:1.6;margin-bottom:14px;}
+.feedback-banner-sub em{color:var(--yellow);font-style:normal;}
+.btn-feedback{background:var(--yellow);color:var(--ink);border:none;padding:12px 20px;border-radius:50px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:800;cursor:pointer;width:100%;transition:all .2s;}
+.btn-feedback:hover{background:var(--yellow-d);}
+
+/* LOG */
+.log-card{margin:0 14px 12px;background:var(--surface);border-radius:20px;padding:20px;border:2px solid var(--border);}
+.log-title{font-size:14px;font-weight:800;margin-bottom:14px;}
+.log-entries{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
+.log-entry{display:flex;align-items:center;gap:11px;padding:11px 13px;border-radius:12px;background:var(--bg);}
+.log-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.log-dot.done{background:var(--teal);}
+.log-dot.pending{background:transparent;border:2px solid var(--yellow);}
+.log-text{flex:1;font-size:13px;font-weight:600;}
+.log-amt{font-size:13px;font-weight:800;}
+.log-amt.done{color:var(--teal-dd);}
+.log-amt.pending{color:var(--muted);}
+.log-cta{display:flex;align-items:center;justify-content:space-between;background:var(--teal-p);border-radius:14px;padding:14px 16px;border:2px solid rgba(0,184,169,.28);}
+.log-cta-text{font-size:13px;font-weight:600;color:var(--teal-dd);line-height:1.45;}
+.log-cta-btn{background:var(--pink);color:var(--white);padding:9px 18px;border-radius:50px;font-size:12px;font-weight:800;border:none;cursor:pointer;white-space:nowrap;margin-left:12px;font-family:'Plus Jakarta Sans',sans-serif;box-shadow:0 3px 12px rgba(255,92,168,.35);transition:all .2s;}
+.log-cta-btn:hover{background:var(--pink-d);}
+
+/* CHALLENGES */
+.challenge-card{margin:0 14px 12px;background:var(--surface);border-radius:20px;padding:20px;border:2px solid var(--border);}
+.challenge-title{font-size:14px;font-weight:800;margin-bottom:14px;}
+.challenge-list{display:flex;flex-direction:column;gap:8px;}
+.challenge-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;background:var(--bg);border:2px solid var(--border);}
+.challenge-emoji{font-size:22px;flex-shrink:0;}
+.challenge-info{flex:1;}
+.challenge-name{font-size:13px;font-weight:700;margin-bottom:2px;}
+.challenge-progress{font-size:11px;color:var(--muted);}
+.challenge-join{background:var(--teal);color:var(--yellow);border:none;padding:6px 13px;border-radius:20px;font-size:11px;font-weight:800;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;flex-shrink:0;transition:all .2s;}
+.challenge-join.joined{background:var(--yellow);color:var(--ink);}
+
+/* QUIZ DUELL */
+.quiz-card{margin:14px 14px 12px;background:var(--ink);border-radius:20px;padding:20px;color:var(--white);}
+.quiz-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;}
+.quiz-eyebrow{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--yellow);font-weight:700;margin-bottom:3px;}
+.quiz-title{font-size:18px;font-weight:800;}
+.quiz-streak-wrap{text-align:center;background:rgba(255,226,52,.12);border-radius:12px;padding:8px 14px;border:1px solid rgba(255,226,52,.25);}
+.quiz-streak-num{font-size:22px;font-weight:800;color:var(--yellow);line-height:1;}
+.quiz-streak-lbl{font-size:10px;color:rgba(255,255,255,.55);font-weight:700;text-transform:uppercase;letter-spacing:1px;}
+.quiz-vs{display:flex;align-items:center;gap:10px;margin-bottom:16px;background:rgba(255,255,255,.07);border-radius:14px;padding:14px;}
+.quiz-vs-player{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;}
+.quiz-vs-avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.quiz-vs-name{font-size:11px;font-weight:700;color:rgba(255,255,255,.7);}
+.quiz-vs-score{font-size:18px;font-weight:800;color:var(--yellow);}
+.quiz-vs-middle{flex:1;text-align:center;}
+.quiz-vs-label{font-size:16px;font-weight:800;color:var(--pink);margin-bottom:4px;}
+.quiz-vs-topic{font-size:10px;color:rgba(255,255,255,.45);font-weight:600;line-height:1.3;}
+.quiz-q-label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.45);font-weight:700;margin-bottom:8px;}
+.quiz-q-text{font-size:15px;font-weight:700;color:var(--white);line-height:1.45;margin-bottom:14px;}
+.quiz-options{display:flex;flex-direction:column;gap:8px;}
+.quiz-opt{background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.12);border-radius:12px;padding:12px 14px;color:var(--white);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-align:left;transition:all .18s;}
+.quiz-opt:hover{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.3);}
+.quiz-opt.correct{background:rgba(0,184,169,.25);border-color:var(--teal);}
+.quiz-opt.wrong{background:rgba(255,92,168,.2);border-color:var(--pink);}
+.quiz-result{text-align:center;padding:10px 0;}
+.quiz-result-icon{font-size:42px;margin-bottom:8px;}
+.quiz-result-text{font-size:20px;font-weight:800;color:var(--yellow);margin-bottom:8px;}
+.quiz-result-exp{font-size:13px;color:rgba(255,255,255,.65);line-height:1.6;margin-bottom:16px;}
+.quiz-result-actions{display:flex;flex-direction:column;gap:8px;}
+.quiz-next-btn{background:var(--teal);color:var(--yellow);border:none;padding:12px;border-radius:50px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:800;cursor:pointer;transition:all .2s;}
+.quiz-next-btn:hover{background:var(--teal-d);}
+.quiz-challenge-btn{background:var(--pink);color:var(--white);border:none;padding:12px;border-radius:50px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:800;cursor:pointer;transition:all .2s;}
+.quiz-challenge-btn:hover{background:var(--pink-d);}
+.quiz-pending{margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,.1);}
+.quiz-pending-label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.4);font-weight:700;margin-bottom:10px;}
+.quiz-pending-list{display:flex;flex-direction:column;gap:8px;}
+.quiz-pending-item{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;color:rgba(255,255,255,.8);}
+.quiz-pending-status{flex:1;font-size:11px;color:rgba(255,255,255,.45);}
+.quiz-pending-status.won{color:var(--yellow);}
+.quiz-poke-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:5px 12px;color:var(--white);font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;font-weight:700;cursor:pointer;transition:all .18s;}
+.quiz-poke-btn:hover{background:rgba(255,255,255,.2);}
+
+/* FEED */
+.feed-card{margin:0 14px 12px;background:var(--surface);border-radius:20px;padding:20px;border:2px solid var(--border);}
+.feed-title{font-size:14px;font-weight:800;margin-bottom:14px;}
+.feed-items{display:flex;flex-direction:column;gap:10px;}
+.feed-item{display:flex;gap:12px;padding:12px 14px;border-radius:12px;background:var(--bg);}
+.feed-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.feed-av-teal{background:var(--teal-p);}
+.feed-av-pink{background:var(--pink-p);}
+.feed-av-yellow{background:var(--yellow-p);}
+.feed-content{flex:1;}
+.feed-name{font-size:12px;font-weight:800;margin-bottom:2px;}
+.feed-action{font-size:12px;color:var(--muted);line-height:1.4;}
+.feed-action strong{color:var(--ink);}
+.feed-time{font-size:10px;color:var(--muted);margin-top:3px;}
+.feed-react{display:flex;gap:6px;margin-top:8px;}
+.react-btn{padding:4px 10px;border-radius:20px;border:2px solid var(--border);background:transparent;font-size:11px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;color:var(--muted);transition:all .18s;}
+.react-btn:hover{border-color:var(--pink);color:var(--pink);}
+.react-btn.reacted{background:var(--pink-p);border-color:var(--pink);color:var(--pink-d);}
+
+/* MILESTONE */
+.milestone-banner{margin:14px 14px 12px;background:var(--yellow-p);border:2px solid rgba(255,226,52,.6);border-radius:18px;padding:16px 18px;display:flex;align-items:center;gap:14px;}
+.milestone-icon{font-size:28px;}
+.milestone-body h4{font-size:14px;font-weight:800;margin-bottom:3px;}
+.milestone-body p{font-size:12px;color:var(--muted);line-height:1.4;}
+
+/* BOTTOM NAV */
+.bottomnav{display:flex;border-top:2px solid var(--border);background:var(--surface);position:fixed;bottom:0;width:100%;max-width:430px;z-index:200;}
+.bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;padding:11px 6px 10px;gap:3px;cursor:pointer;border:none;background:none;}
+.bnav-item svg{width:20px;height:20px;stroke:var(--muted);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.bnav-item span{font-size:9px;font-weight:700;color:var(--muted);font-family:'Plus Jakarta Sans',sans-serif;}
+.bnav-item.active svg{stroke:var(--teal);}
+.bnav-item.active span{color:var(--teal);}
+
+/* MODAL (info + buddy) */
+.modal-overlay{position:fixed;inset:0;background:rgba(9,31,29,.5);z-index:500;display:none;align-items:flex-end;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--surface);border-radius:28px 28px 0 0;padding:28px 22px 44px;width:100%;max-width:430px;animation:slideUp .35s cubic-bezier(.22,1,.36,1);position:relative;max-height:80vh;overflow-y:auto;}
+@keyframes slideUp{from{transform:translateY(60px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.modal-handle{width:40px;height:4px;border-radius:2px;background:var(--border);margin:0 auto 22px;}
+.modal-close{position:absolute;right:22px;top:22px;width:30px;height:30px;border-radius:50%;background:var(--bg);border:none;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;}
+.modal-title{font-size:18px;font-weight:800;margin-bottom:6px;}
+.modal-body{font-size:14px;line-height:1.7;color:var(--muted);}
+.modal-body strong{color:var(--ink);}
+.modal-body .example{background:var(--teal-p);border-radius:12px;padding:12px 14px;margin:12px 0;border-left:3px solid var(--teal);}
+.modal-body .example p{font-size:13px;color:var(--teal-dd);font-weight:600;}
+.modal-note{font-size:11px;color:var(--muted);font-style:italic;margin-top:12px;line-height:1.6;}
+
+/* SETTINGS */
+.settings-content{padding:22px 14px;flex:1;}
+.settings-group{margin-bottom:26px;}
+.settings-group-title{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;font-weight:700;}
+.settings-row{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:2px solid var(--border);}
+.settings-row:last-child{border-bottom:none;}
+.settings-row-label{font-size:13px;font-weight:700;}
+.settings-row-val{font-size:13px;color:var(--muted);font-weight:600;}
+
+/* LEARN MODAL */
+.learn-modal-content{}
+.learn-modal-content h3{font-size:16px;font-weight:800;margin-bottom:8px;color:var(--ink);}
+.learn-modal-content p{font-size:14px;line-height:1.75;color:var(--muted);margin-bottom:12px;}
+.learn-modal-content .callout{background:var(--teal-p);border-radius:12px;padding:14px;margin:12px 0;border-left:3px solid var(--teal);}
+.learn-modal-content .callout p{color:var(--teal-dd);font-weight:600;font-size:13px;margin:0;}
+
+/* TOAST */
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--ink);color:var(--yellow);padding:13px 22px;border-radius:50px;font-size:13px;font-weight:700;white-space:nowrap;transition:transform .4s cubic-bezier(.22,1,.36,1);z-index:9999;box-shadow:0 8px 30px rgba(9,31,29,.3);opacity:0;pointer-events:none;}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+
+.mt16{margin-top:16px;}
+.mb0{margin-bottom:0;}
+/* GOAL FOLLOW-UP BANNER */
+.goal-followup-banner{display:flex;gap:14px;align-items:flex-start;background:var(--teal-p);border:2px solid rgba(0,184,169,.25);border-radius:16px;padding:16px;margin-bottom:16px;}
+.gfb-icon{font-size:26px;flex-shrink:0;}
+.gfb-title{font-size:14px;font-weight:800;margin-bottom:3px;color:var(--ink);}
+.gfb-sub{font-size:12px;color:var(--muted);line-height:1.5;}
+/* CHECKBOX GROUP */
+.checkbox-group{display:flex;flex-direction:column;gap:8px;margin-top:4px;}
+.checkbox-item{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:500;cursor:pointer;padding:10px 12px;background:var(--bg);border-radius:12px;border:2px solid var(--border);transition:all .18s;}
+.checkbox-item:hover{border-color:var(--teal);background:var(--teal-p);}
+.checkbox-item input{width:18px;height:18px;accent-color:var(--teal);cursor:pointer;flex-shrink:0;}
+/* BUDDY INVITE CARD */
+.buddy-invite-card{display:flex;gap:14px;align-items:flex-start;background:var(--yellow-p);border:2px solid rgba(255,226,52,.5);border-radius:16px;padding:16px;}
+.bic-icon{font-size:28px;flex-shrink:0;}
+.bic-title{font-size:14px;font-weight:800;margin-bottom:3px;}
+.bic-sub{font-size:12px;color:var(--muted);line-height:1.5;}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ══════════════════════════════════
+     SCREEN 1: ONBOARD
+══════════════════════════════════ -->
+<div class="screen active" id="s-onboard">
+  <div class="hero">
+    <div class="hero-eyebrow">We're still building</div>
+    <h1 class="hero-title">Build the habit.<br><em>Close the gap.</em></h1>
+    <p class="hero-sub">Women invest significantly less than men — not because they can't, but because the tools weren't built for them. KIN closes the investing gap between where you are today and where you want to be.</p>
+  </div>
+  <div class="card-lift">
+    <div class="step-label"><div class="step-dot"></div>Step 1 of 3 — About you</div>
+
+    <div class="field">
+      <label>Your first name</label>
+      <input type="text" id="i-name" placeholder="e.g. Chiara" />
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Age</label>
+        <input type="number" id="i-age" placeholder="28" min="18" max="65" />
+      </div>
+      <div class="field">
+        <label>Already invested <button class="info-btn" onclick="openInfo('invested')">i</button></label>
+        <div class="input-wrap">
+          <span class="input-pre">€</span>
+          <input type="text" class="pre" id="i-invested" placeholder="0" oninput="formatThousands(this)" inputmode="numeric" />
+        </div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Monthly commitment — <strong id="monthly-disp">€300</strong></label>
+      <div class="range-wrap">
+        <input type="range" id="i-monthly" min="50" max="2000" step="50" value="300"
+          oninput="document.getElementById('monthly-disp').textContent='€'+Number(this.value).toLocaleString()" />
+        <div class="range-labels"><span>€50</span><span>€2,000/mo</span></div>
+      </div>
+    </div>
+
+    <button class="btn btn-pink" onclick="goS2()">Choose my goal →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SCREEN 2: GOAL
+══════════════════════════════════ -->
+<div class="screen" id="s-goal">
+  <div class="hero">
+    <div class="hero-eyebrow">Step 2 of 3</div>
+    <h1 class="hero-title">What are you<br><em>building towards?</em></h1>
+    <p class="hero-sub">People with a specific financial goal are <strong style="color:var(--yellow)">42% more likely</strong> to invest consistently. Pick yours — the follow-up questions will adapt to your goal.</p>
+  </div>
+  <div class="card-lift">
+    <div class="step-label"><div class="step-dot"></div>Pick your primary goal</div>
+
+    <div class="goal-grid">
+      <div class="goal-card" data-goal="habit" onclick="selectGoal(this)">
+        <div class="goal-icon">🌱</div>
+        <div class="goal-text">
+          <h4>Build a habit first</h4>
+          <p>Start investing consistently. Let's see where it takes you.</p>
+          <button class="goal-info-link" onclick="event.stopPropagation();openInfo('goal-habit')">What does this mean? →</button>
+        </div>
+        <div class="goal-check">✓</div>
+      </div>
+      <div class="goal-card" data-goal="house" onclick="selectGoal(this)">
+        <div class="goal-icon">🏡</div>
+        <div class="goal-text">
+          <h4>Down payment for a house</h4>
+          <p>We calculate your target based on real prices in your city.</p>
+          <button class="goal-info-link" onclick="event.stopPropagation();openInfo('goal-house')">How does this work? →</button>
+        </div>
+        <div class="goal-check">✓</div>
+      </div>
+      <div class="goal-card" data-goal="fire" onclick="selectGoal(this)">
+        <div class="goal-icon">🔥</div>
+        <div class="goal-text">
+          <h4>Financial independence (FIRE)</h4>
+          <p>Retire early. Never worry about money again.</p>
+          <button class="goal-info-link" onclick="event.stopPropagation();openInfo('goal-fire')">What is FIRE? →</button>
+        </div>
+        <div class="goal-check">✓</div>
+      </div>
+      <div class="goal-card" data-goal="safety" onclick="selectGoal(this)">
+        <div class="goal-icon">🛡️</div>
+        <div class="goal-text">
+          <h4>Safety bucket</h4>
+          <p>A financial cushion so life's surprises don't break the bank.</p>
+          <button class="goal-info-link" onclick="event.stopPropagation();openInfo('goal-safety')">What counts as a safety bucket? →</button>
+        </div>
+        <div class="goal-check">✓</div>
+      </div>
+      <div class="goal-card" data-goal="diversify" onclick="selectGoal(this)">
+        <div class="goal-icon">📊</div>
+        <div class="goal-text">
+          <h4>Diversify my investments</h4>
+          <p>You're already investing — now spread the risk more strategically.</p>
+          <button class="goal-info-link" onclick="event.stopPropagation();openInfo('goal-diversify')">What is diversification? →</button>
+        </div>
+        <div class="goal-check">✓</div>
+      </div>
+    </div>
+
+    <!-- DYNAMIC GOAL FOLLOW-UPS -->
+
+    <!-- HABIT -->
+    <div id="fields-habit" style="display:none;margin-top:16px;">
+      <div class="goal-followup-banner">
+        <div class="gfb-icon">🌱</div>
+        <div><div class="gfb-title">Perfect starting point</div><div class="gfb-sub">No complex numbers needed. Just tell us when your salary lands and we'll remind you to invest every month.</div></div>
+      </div>
+      <div class="field"><label>Salary day (day of month)</label><input type="number" id="h-salday" placeholder="e.g. 1" min="1" max="31" /></div>
+    </div>
+
+    <!-- HOUSE -->
+    <div id="fields-house" style="display:none;margin-top:16px;">
+      <div class="goal-followup-banner">
+        <div class="gfb-icon">🏡</div>
+        <div><div class="gfb-title">Let's calculate your deposit</div><div class="gfb-sub">We estimate a 20% down payment based on average prices in your city.</div></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>City</label>
+          <select id="i-city"><option>Berlin</option><option>Munich</option><option>Hamburg</option><option>Vienna</option><option>Zurich</option><option>Amsterdam</option><option>London</option><option>Paris</option><option>Other</option></select>
+        </div>
+        <div class="field"><label>Bedrooms</label>
+          <select id="i-beds"><option>1</option><option selected>2</option><option>3</option><option>4+</option></select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Approx. size</label>
+          <div class="input-wrap"><input type="number" class="suf" id="i-sqm" placeholder="75" /><span class="input-suf">m²</span></div>
+        </div>
+        <div class="field"><label>When to buy?</label>
+          <select id="i-buyyear"><option>In 2 years</option><option>In 3 years</option><option>In 5 years</option><option>In 7 years</option><option>In 10 years</option><option>Not sure yet</option></select>
+        </div>
+      </div>
+      <div class="field"><label>Salary day (day of month)</label><input type="number" id="house-salday" placeholder="e.g. 1" min="1" max="31" /></div>
+    </div>
+
+    <!-- FIRE -->
+    <div id="fields-fire" style="display:none;margin-top:16px;">
+      <div class="goal-followup-banner">
+        <div class="gfb-icon">🔥</div>
+        <div><div class="gfb-title">Let's find your FIRE number</div><div class="gfb-sub">Your FIRE number = annual expenses × 25. Tell us your costs and when you want to be free.</div></div>
+      </div>
+      <div class="field">
+        <div class="expense-toggle">
+          <button class="active" id="toggle-m" onclick="setExpMode('monthly')">Per month</button>
+          <button id="toggle-y" onclick="setExpMode('yearly')">Per year</button>
+        </div>
+        <label id="exp-label">Monthly expenses</label>
+        <div class="input-wrap">
+          <span class="input-pre">€</span>
+          <input type="text" class="pre suf" id="i-expenses" placeholder="3,000" oninput="formatThousands(this)" inputmode="numeric"/>
+          <span class="input-suf" id="exp-suf">/mo</span>
+        </div>
+        <button class="field-info-link" onclick="openInfo('expenses')">What should I include? →</button>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Target FIRE age</label><input type="number" id="i-retire" placeholder="50" min="30" max="75" /></div>
+        <div class="field"><label>Salary day</label><input type="number" id="fire-salday" placeholder="1" min="1" max="31" /></div>
+      </div>
+      <div class="field">
+        <label>Expected annual return — <strong id="return-disp-fire">7%</strong></label>
+        <div class="range-wrap">
+          <input type="range" id="i-return-fire" min="3" max="12" step="0.5" value="7" oninput="document.getElementById('return-disp-fire').textContent=this.value+'%'" />
+          <div class="range-labels"><span>3% conservative</span><span>12% aggressive</span></div>
+        </div>
+        <button class="field-info-link" onclick="openInfo('return')">Why 7%? →</button>
+      </div>
+    </div>
+
+    <!-- SAFETY -->
+    <div id="fields-safety" style="display:none;margin-top:16px;">
+      <div class="goal-followup-banner">
+        <div class="gfb-icon">🛡️</div>
+        <div><div class="gfb-title">Building your cushion</div><div class="gfb-sub">We target 9 months of expenses. Just tell us your monthly costs.</div></div>
+      </div>
+      <div class="field">
+        <label>Monthly expenses</label>
+        <div class="input-wrap">
+          <span class="input-pre">€</span>
+          <input type="text" class="pre suf" id="safety-expenses" placeholder="3,000" oninput="formatThousands(this)" inputmode="numeric"/>
+          <span class="input-suf">/mo</span>
+        </div>
+        <button class="field-info-link" onclick="openInfo('expenses')">What should I include? →</button>
+      </div>
+      <div class="field"><label>Salary day (day of month)</label><input type="number" id="safety-salday" placeholder="e.g. 1" min="1" max="31" /></div>
+    </div>
+
+    <!-- DIVERSIFY -->
+    <div id="fields-diversify" style="display:none;margin-top:16px;">
+      <div class="goal-followup-banner">
+        <div class="gfb-icon">📊</div>
+        <div><div class="gfb-title">Let's see your current mix</div><div class="gfb-sub">Tell us what you already have so we can show where the gaps are.</div></div>
+      </div>
+      <div class="field">
+        <label>What do you currently invest in?</label>
+        <div class="checkbox-group">
+          <label class="checkbox-item"><input type="checkbox" id="d-etf" /> ETFs / Index funds</label>
+          <label class="checkbox-item"><input type="checkbox" id="d-stocks" /> Individual stocks</label>
+          <label class="checkbox-item"><input type="checkbox" id="d-savings" /> High-yield savings</label>
+          <label class="checkbox-item"><input type="checkbox" id="d-property" /> Property</label>
+          <label class="checkbox-item"><input type="checkbox" id="d-crypto" /> Crypto</label>
+          <label class="checkbox-item"><input type="checkbox" id="d-pension" /> Pension / retirement fund</label>
+        </div>
+      </div>
+      <div class="field"><label>Total currently invested</label>
+        <div class="input-wrap"><span class="input-pre">€</span><input type="text" class="pre" id="div-invested" placeholder="0" oninput="formatThousands(this)" inputmode="numeric"/></div>
+      </div>
+      <div class="field"><label>Salary day (day of month)</label><input type="number" id="div-salday" placeholder="e.g. 1" min="1" max="31" /></div>
+    </div>
+
+    <button class="btn btn-pink" onclick="goS3()" style="margin-top:18px">Almost done →</button>
+    <button class="btn btn-ghost" onclick="showScreen('s-onboard')">← Back</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SCREEN 3: YOUR PEOPLE
+══════════════════════════════════ -->
+<div class="screen" id="s-timeline">
+  <div class="hero">
+    <div class="hero-eyebrow">Step 3 of 3</div>
+    <h1 class="hero-title">One last thing —<br><em>your people</em></h1>
+    <p class="hero-sub">Investors with an accountability buddy are 65% more likely to stay consistent. Add one now or skip — you can always add later.</p>
+  </div>
+  <div class="card-lift">
+    <div class="step-label"><div class="step-dot"></div>Accountability buddy <span style="font-weight:400;font-size:9px">(optional)</span></div>
+
+    <div class="buddy-invite-card">
+      <div class="bic-icon">👯</div>
+      <div class="bic-text">
+        <div class="bic-title">Invite a friend to keep you honest</div>
+        <div class="bic-sub">You both get your first month of KIN+ free when they join.</div>
+      </div>
+    </div>
+
+    <div class="field" style="margin-top:14px">
+      <label>Buddy's name</label>
+      <input type="text" id="i-buddy-name" placeholder="e.g. Sofia" />
+    </div>
+    <div class="field">
+      <label>Their email or phone</label>
+      <input type="text" id="i-buddy-contact" placeholder="sofia@email.com" />
+    </div>
+
+    <button class="btn btn-pink" onclick="launch()">Show me my numbers →</button>
+    <button class="btn btn-ghost" onclick="showScreen('s-goal')">← Back</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SCREEN 4: DASHBOARD
+══════════════════════════════════ -->
+<div class="screen" id="s-dash">
+  <div class="topnav">
+    <div class="logo">KI<span>N</span></div>
+    <div class="tabs">
+      <button class="tab active" onclick="showTab(this,'t-home')">Home</button>
+      <button class="tab" onclick="showTab(this,'t-community')">Community</button>
+      <button class="tab" onclick="showTab(this,'t-learn')">Learn</button>
+    </div>
+  </div>
+
+  <div class="dash-scroll">
+
+    <!-- HOME TAB -->
+    <div id="t-home">
+      <!-- Feedback banner top of home -->
+      <div class="feedback-banner">
+        <div class="feedback-banner-title">We're still building ✨</div>
+        <div class="feedback-banner-sub">We'd love to hear what you think — what's missing, what you'd improve, or what made you go <em>"oh, that's actually useful."</em> Leave your feedback and you might see your idea in the app.</div>
+        <button class="btn-feedback" onclick="openFeedback()">💬 Share feedback</button>
+      </div>
+
+      <div class="milestone-banner" id="milestone-banner" style="display:none;margin-top:12px;">
+        <div class="milestone-icon">🏆</div>
+        <div class="milestone-body">
+          <h4 id="milestone-title">Milestone!</h4>
+          <p id="milestone-desc">You crossed a new threshold.</p>
+        </div>
+      </div>
+
+      <!-- FIRE CARD — clean, no decorative circles -->
+      <div class="fire-card" style="margin-top:12px;">
+        <div class="goal-badge" id="d-goal-badge">🌱 Building habit</div>
+        <div class="fire-lbl" id="d-fire-lbl">Your target</div>
+        <div class="fire-num" id="d-fire-num">€—</div>
+        <div class="fire-sub" id="d-fire-sub">—</div>
+        <div class="prog-track"><div class="prog-fill" id="d-prog" style="width:0%"></div></div>
+        <div class="prog-stats">
+          <span>Invested <strong id="d-invested">€0</strong></span>
+          <span><strong id="d-pct">0%</strong> of target</span>
+        </div>
+      </div>
+
+      <!-- STAT CARDS — clearer labels -->
+      <div class="stat-grid">
+        <div class="stat s-yellow">
+          <div class="stat-icon">🎯</div>
+          <div class="stat-val" id="d-fire-age">—</div>
+          <div class="stat-lbl">You'll get there</div>
+          <div class="stat-sub" id="d-fire-age-sub">Target age</div>
+        </div>
+        <div class="stat">
+          <div class="stat-icon">📅</div>
+          <div class="stat-val" id="d-monthly-stat">€—</div>
+          <div class="stat-lbl">Monthly goal</div>
+          <div class="stat-sub">Your commitment</div>
+        </div>
+        <div class="stat s-teal">
+          <div class="stat-icon">🔥</div>
+          <div class="stat-val" id="d-streak-stat">0 mo</div>
+          <div class="stat-lbl">Streak</div>
+          <div class="stat-sub">Consecutive months</div>
+        </div>
+        <div class="stat s-pink">
+          <div class="stat-icon">📈</div>
+          <div class="stat-val" id="d-projected">€—</div>
+          <div class="stat-lbl">Projected</div>
+          <div class="stat-sub">At your target age</div>
+        </div>
+      </div>
+
+      <!-- 10-YR BAND — no decorative circles -->
+      <div class="proj-band">
+        <div class="proj-band-lbl">10-year outlook — if you stay consistent</div>
+        <div class="proj-band-headline">You could reach<br><em id="proj-10yr-val">€—</em></div>
+        <div class="proj-band-sub">Investing <span id="proj-monthly-lbl">€300</span>/mo · <span id="proj-return-lbl">7%</span> avg return · Not financial advice</div>
+        <div class="proj-bars" id="proj-bars"></div>
+        <div class="proj-miss">
+          <div class="proj-miss-lbl">Miss out on if you stop now</div>
+          <div class="proj-miss-val" id="proj-miss-val">€—</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMMUNITY TAB -->
+    <div id="t-community" style="display:none">
+      <div class="streak-card" style="margin:14px 14px 12px">
+        <div class="streak-top">
+          <div class="streak-title">Your investing streak</div>
+          <div class="streak-badge" id="d-streak-badge">0 months</div>
+        </div>
+        <div class="streak-dots" id="streak-dots"></div>
+        <div class="buddy-row" id="buddy-row">
+          <div class="buddy-avatar">👯</div>
+          <div class="buddy-text">
+            <div class="buddy-name" id="buddy-display-name">Add a buddy</div>
+            <div class="buddy-status" id="buddy-status">Keep each other accountable every month</div>
+          </div>
+          <button class="buddy-btn" onclick="openModal('buddy-modal')">+ Add</button>
+        </div>
+      </div>
+
+      <div class="challenge-card">
+        <div class="challenge-title">Active challenges 💪</div>
+        <div class="challenge-list">
+          <div class="challenge-item">
+            <div class="challenge-emoji">🔥</div>
+            <div class="challenge-info">
+              <div class="challenge-name">6-month consistency</div>
+              <div class="challenge-progress">142 women joined · 3 months left</div>
+            </div>
+            <button class="challenge-join" onclick="toggleChallenge(this)">Join</button>
+          </div>
+          <div class="challenge-item">
+            <div class="challenge-emoji">📈</div>
+            <div class="challenge-info">
+              <div class="challenge-name">€500/mo for 3 months</div>
+              <div class="challenge-progress">89 women · starts May 1st</div>
+            </div>
+            <button class="challenge-join" onclick="toggleChallenge(this)">Join</button>
+          </div>
+          <div class="challenge-item">
+            <div class="challenge-emoji">🌱</div>
+            <div class="challenge-info">
+              <div class="challenge-name">First investment ever</div>
+              <div class="challenge-progress">318 women completed this</div>
+            </div>
+            <button class="challenge-join joined" onclick="toggleChallenge(this)">✓ Done</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- FINANCE QUIZ DUELL -->
+      <div class="quiz-card">
+        <div class="quiz-header">
+          <div>
+            <div class="quiz-eyebrow">Daily challenge</div>
+            <div class="quiz-title">Finance Duell ⚡</div>
+          </div>
+          <div class="quiz-streak-wrap">
+            <div class="quiz-streak-num" id="quiz-streak-num">3</div>
+            <div class="quiz-streak-lbl">day streak</div>
+          </div>
+        </div>
+
+        <!-- Active challenge vs friend -->
+        <div class="quiz-vs" id="quiz-vs-section">
+          <div class="quiz-vs-player">
+            <div class="quiz-vs-avatar" style="background:var(--teal-p)">🌸</div>
+            <div class="quiz-vs-name">You</div>
+            <div class="quiz-vs-score" id="quiz-my-score">2/3</div>
+          </div>
+          <div class="quiz-vs-middle">
+            <div class="quiz-vs-label">VS</div>
+            <div class="quiz-vs-topic">ETFs &amp; Index Funds</div>
+          </div>
+          <div class="quiz-vs-player">
+            <div class="quiz-vs-avatar" style="background:var(--pink-p)">🦋</div>
+            <div class="quiz-vs-name">Laura</div>
+            <div class="quiz-vs-score">?/3</div>
+          </div>
+        </div>
+
+        <!-- Today's question -->
+        <div class="quiz-question-wrap" id="quiz-q-wrap">
+          <div class="quiz-q-label">Question 3 of 3</div>
+          <div class="quiz-q-text" id="quiz-q-text">What does "diversification" mean in investing?</div>
+          <div class="quiz-options" id="quiz-options">
+            <button class="quiz-opt" onclick="answerQuiz(this, false)">Investing only in one company you trust</button>
+            <button class="quiz-opt" onclick="answerQuiz(this, true)">Spreading money across different assets to reduce risk</button>
+            <button class="quiz-opt" onclick="answerQuiz(this, false)">Checking your portfolio every day</button>
+            <button class="quiz-opt" onclick="answerQuiz(this, false)">Only investing in sustainable companies</button>
+          </div>
+        </div>
+
+        <!-- Result (hidden until answered) -->
+        <div class="quiz-result" id="quiz-result" style="display:none">
+          <div class="quiz-result-icon" id="quiz-result-icon">🎉</div>
+          <div class="quiz-result-text" id="quiz-result-text">Correct!</div>
+          <div class="quiz-result-exp" id="quiz-result-exp">Diversification means spreading your investments across different assets, geographies, and sectors to reduce the impact of any single loss.</div>
+          <div class="quiz-result-actions">
+            <button class="quiz-next-btn" onclick="nextQuizRound()">Next challenge →</button>
+            <button class="quiz-challenge-btn" onclick="challengeFriend()">Challenge a friend ⚡</button>
+          </div>
+        </div>
+
+        <!-- Pending challenges -->
+        <div class="quiz-pending">
+          <div class="quiz-pending-label">Waiting for replies</div>
+          <div class="quiz-pending-list">
+            <div class="quiz-pending-item">
+              <span>🌸 Sofia</span>
+              <span class="quiz-pending-status">Hasn't played yet</span>
+              <button class="quiz-poke-btn" onclick="showToast('👋 Poke sent to Sofia!')">Poke</button>
+            </div>
+            <div class="quiz-pending-item">
+              <span>⭐ Maria</span>
+              <span class="quiz-pending-status won">You won! 3–1</span>
+              <button class="quiz-poke-btn" onclick="showToast('⚡ Rematch challenge sent!')">Rematch</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="feed-card">
+        <div class="feed-title">Your network 🌐</div>
+        <div class="feed-items">
+          <div class="feed-item">
+            <div class="feed-avatar feed-av-teal">🌸</div>
+            <div class="feed-content">
+              <div class="feed-name">Sofia M.</div>
+              <div class="feed-action">just hit her <strong>6-month investing streak</strong> 🔥</div>
+              <div class="feed-time">2 hours ago</div>
+              <div class="feed-react">
+                <button class="react-btn" onclick="react(this)">🎉 Congrats</button>
+                <button class="react-btn" onclick="react(this)">💌 Poke</button>
+              </div>
+            </div>
+          </div>
+          <div class="feed-item">
+            <div class="feed-avatar feed-av-pink">🦋</div>
+            <div class="feed-content">
+              <div class="feed-name">Laura K.</div>
+              <div class="feed-action">made her <strong>first ever investment</strong> — €200 into a global ETF 🌍</div>
+              <div class="feed-time">Yesterday</div>
+              <div class="feed-react">
+                <button class="react-btn" onclick="react(this)">🎉 Congrats</button>
+                <button class="react-btn" onclick="react(this)">🚀 You go!</button>
+              </div>
+            </div>
+          </div>
+          <div class="feed-item">
+            <div class="feed-avatar feed-av-yellow">⭐</div>
+            <div class="feed-content">
+              <div class="feed-name">Maria B.</div>
+              <div class="feed-action">hasn't invested this month yet — <strong>nudge her?</strong></div>
+              <div class="feed-time">3 days ago</div>
+              <div class="feed-react">
+                <button class="react-btn" onclick="nudge(this)">👋 Send nudge</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="social-card">
+        <div class="social-title">Share your progress ✨</div>
+        <div class="social-sub">Inspire your network and keep yourself accountable</div>
+        <div class="share-btns">
+          <button class="share-btn sb-yellow" onclick="shareAction('invested')">
+            <span class="share-btn-icon">📢</span><span>Tell your network you invested this month</span>
+          </button>
+          <button class="share-btn sb-pink" onclick="shareAction('streak')">
+            <span class="share-btn-icon">🔥</span><span>Share your investing streak</span>
+          </button>
+          <button class="share-btn sb-white" onclick="shareAction('fire')">
+            <span class="share-btn-icon">✦</span><span>Copy your financial independence card</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- LEARN TAB -->
+    <div id="t-learn" style="display:none">
+
+      <!-- What first-time investors do -->
+      <div class="insights-card" style="margin-top:14px;">
+        <div class="insights-title">What first-time investors invest in 📊</div>
+        <div class="insights-sub">Based on common practice among new investors in Europe. Not financial advice.</div>
+
+        <div class="insight-item">
+          <div class="insight-header">
+            <div class="insight-icon">🌍</div>
+            <div class="insight-name">MSCI World ETF</div>
+            <div class="insight-tag">Most common</div>
+          </div>
+          <div class="insight-bar-track"><div class="insight-bar-fill" style="width:78%"></div></div>
+          <div class="insight-desc">Tracks ~1,500 companies across 23 developed countries. One fund, maximum diversification. Popular options: iShares Core MSCI World, Vanguard FTSE All-World.</div>
+        </div>
+
+        <div class="insight-item">
+          <div class="insight-header">
+            <div class="insight-icon">🇪🇺</div>
+            <div class="insight-name">S&P 500 ETF</div>
+            <div class="insight-tag">Very popular</div>
+          </div>
+          <div class="insight-bar-track"><div class="insight-bar-fill" style="width:62%"></div></div>
+          <div class="insight-desc">Tracks the 500 largest US companies. Higher growth potential, higher concentration in one market.</div>
+        </div>
+
+        <div class="insight-item">
+          <div class="insight-header">
+            <div class="insight-icon">💰</div>
+            <div class="insight-name">High-yield savings account</div>
+            <div class="insight-tag">Safety first</div>
+          </div>
+          <div class="insight-bar-track"><div class="insight-bar-fill" style="width:45%"></div></div>
+          <div class="insight-desc">For the safety bucket goal — not investing, but a guaranteed return (currently 2–3.5% in Europe) with no risk.</div>
+        </div>
+
+        <div class="insight-item">
+          <div class="insight-header">
+            <div class="insight-icon">🏢</div>
+            <div class="insight-name">ESG / Sustainable ETFs</div>
+            <div class="insight-tag">Growing fast</div>
+          </div>
+          <div class="insight-bar-track"><div class="insight-bar-fill" style="width:38%"></div></div>
+          <div class="insight-desc">ETFs that screen for environmental, social and governance criteria. Slightly more expensive but aligns money with values.</div>
+        </div>
+
+        <div class="disclaimer">⚠️ KIN does not give financial advice. The above reflects common practice among new investors and is for educational purposes only. Always do your own research or consult a licensed financial advisor.</div>
+      </div>
+
+      <!-- Learning glossary -->
+      <div class="learn-card">
+        <div class="learn-title">Finance 101 📚</div>
+        <div class="learn-sub">The concepts you need — explained simply, no jargon.</div>
+        <div class="learn-grid">
+          <div class="learn-item" onclick="openLearn('investing')">
+            <div class="learn-item-icon">💡</div>
+            <div class="learn-item-title">What is investing?</div>
+            <div class="learn-item-tag">Beginner</div>
+          </div>
+          <div class="learn-item" onclick="openLearn('etf')">
+            <div class="learn-item-icon">📦</div>
+            <div class="learn-item-title">What is an ETF?</div>
+            <div class="learn-item-tag">Beginner</div>
+          </div>
+          <div class="learn-item" onclick="openLearn('return')">
+            <div class="learn-item-icon">📈</div>
+            <div class="learn-item-title">What is a return?</div>
+            <div class="learn-item-tag">Beginner</div>
+          </div>
+          <div class="learn-item" onclick="openLearn('compound')">
+            <div class="learn-item-icon">⚡</div>
+            <div class="learn-item-title">Compound interest</div>
+            <div class="learn-item-tag">Key concept</div>
+          </div>
+          <div class="learn-item" onclick="openLearn('fire')">
+            <div class="learn-item-icon">🔥</div>
+            <div class="learn-item-title">What is FIRE?</div>
+            <div class="learn-item-tag">Intermediate</div>
+          </div>
+          <div class="learn-item" onclick="openLearn('mortgage')">
+            <div class="learn-item-icon">🏡</div>
+            <div class="learn-item-title">What is a mortgage?</div>
+            <div class="learn-item-tag">Intermediate</div>
+          </div>
+          <div class="learn-item" onclick="openLearn('diversification')">
+            <div class="learn-item-icon">🎯</div>
+            <div class="learn-item-title">Diversification</div>
+            <div class="learn-item-tag">Intermediate</div>
+          </div>
+          <div class="learn-item" onclick="openLearn('risk')">
+            <div class="learn-item-icon">⚖️</div>
+            <div class="learn-item-title">Risk vs return</div>
+            <div class="learn-item-tag">Intermediate</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Log section also accessible here -->
+      <div class="log-card">
+        <div class="log-title">Investment log</div>
+        <div class="log-entries" id="log-entries2"></div>
+        <div class="log-cta">
+          <div class="log-cta-text">Salary day coming?<br><strong>Log your investment now</strong></div>
+          <button class="log-cta-btn" onclick="logInvestment()">✓ Log it</button>
+        </div>
+      </div>
+
+      <div class="streak-card">
+        <div class="streak-top">
+          <div class="streak-title">Monthly streak</div>
+          <div class="streak-badge" id="d-streak-badge2">0 months</div>
+        </div>
+        <div class="streak-dots" id="streak-dots2"></div>
+      </div>
+    </div>
+
+  </div><!-- end dash-scroll -->
+
+  <div class="bottomnav">
+    <button class="bnav-item active" onclick="showTab2('t-home',this)">
+      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Home</span>
+    </button>
+    <button class="bnav-item" onclick="showTab2('t-community',this)">
+      <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>Community</span>
+    </button>
+    <button class="bnav-item" onclick="showTab2('t-learn',this)">
+      <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span>Learn</span>
+    </button>
+    <button class="bnav-item" onclick="showScreen('s-settings');setActiveNav(this)">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>Profile</span>
+    </button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SCREEN 5: SETTINGS
+══════════════════════════════════ -->
+<div class="screen" id="s-settings">
+  <div class="topnav"><div class="logo">KI<span>N</span></div></div>
+  <div class="settings-content">
+    <div class="settings-group">
+      <div class="settings-group-title">Profile</div>
+      <div class="settings-row"><div class="settings-row-label">Name</div><div class="settings-row-val" id="s-name">—</div></div>
+      <div class="settings-row"><div class="settings-row-label">Age</div><div class="settings-row-val" id="s-age">—</div></div>
+      <div class="settings-row"><div class="settings-row-label">Goal</div><div class="settings-row-val" id="s-goal-lbl">—</div></div>
+      <div class="settings-row"><div class="settings-row-label">Salary day</div><div class="settings-row-val" id="s-salday">—</div></div>
+    </div>
+    <div class="settings-group">
+      <div class="settings-group-title">Investment plan</div>
+      <div class="settings-row"><div class="settings-row-label">Monthly commitment</div><div class="settings-row-val" id="s-monthly">—</div></div>
+      <div class="settings-row"><div class="settings-row-label">Target</div><div class="settings-row-val" id="s-target">—</div></div>
+      <div class="settings-row"><div class="settings-row-label">Expected return</div><div class="settings-row-val" id="s-return">—</div></div>
+    </div>
+    <div class="settings-group">
+      <div class="settings-group-title">Accountability buddy</div>
+      <div class="settings-row"><div class="settings-row-label">Buddy</div><div class="settings-row-val" id="s-buddy">Not set</div></div>
+    </div>
+    <button class="btn btn-pink" onclick="showScreen('s-onboard')">Edit my setup</button>
+  </div>
+  <div class="bottomnav">
+    <button class="bnav-item" onclick="showScreen('s-dash');showTab2('t-home',this)"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Home</span></button>
+    <button class="bnav-item" onclick="showScreen('s-dash');showTab2('t-community',this)"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>Community</span></button>
+    <button class="bnav-item" onclick="showScreen('s-dash');showTab2('t-learn',this)"><svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span>Learn</span></button>
+    <button class="bnav-item active" onclick="showScreen('s-settings');setActiveNav(this)"><svg viewBox="0 0 24 24" style="stroke:var(--teal)"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span style="color:var(--teal)">Profile</span></button>
+  </div>
+</div>
+
+<!-- ══════ MODALS ══════ -->
+
+<!-- Info modal -->
+<div class="modal-overlay" id="info-modal" onclick="if(event.target===this)closeModal('info-modal')">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <button class="modal-close" onclick="closeModal('info-modal')">✕</button>
+    <div class="modal-title" id="info-title">—</div>
+    <div class="modal-body" id="info-body">—</div>
+  </div>
+</div>
+
+<!-- Learn modal -->
+<div class="modal-overlay" id="learn-modal" onclick="if(event.target===this)closeModal('learn-modal')">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <button class="modal-close" onclick="closeModal('learn-modal')">✕</button>
+    <div class="learn-modal-content" id="learn-body">—</div>
+  </div>
+</div>
+
+<!-- Buddy modal -->
+<div class="modal-overlay" id="buddy-modal" onclick="if(event.target===this)closeModal('buddy-modal')">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <button class="modal-close" onclick="closeModal('buddy-modal')">✕</button>
+    <div class="modal-title">Add accountability buddy</div>
+    <div class="field" style="margin-top:14px"><label>Their name</label><input type="text" id="m-buddy-name" placeholder="Sofia" /></div>
+    <div class="field"><label>Email or phone</label><input type="text" id="m-buddy-contact" placeholder="sofia@email.com" /></div>
+    <button class="btn btn-pink" onclick="saveBuddy()" style="margin-top:8px">Send invite →</button>
+  </div>
+</div>
+
+<!-- Feedback modal -->
+
+
+<div class="toast" id="toast">✓</div>
+
+<script>
+// ── STATE ──
+const S={name:'',age:30,invested:0,monthly:300,goal:'habit',expenses:36000,expMode:'monthly',retireAge:50,returnRate:7,salaryDay:1,buddy:'',buddyContact:''};
+let goalSelected=null;
+
+// ── SCREENS & TABS ──
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+function showTab(btn,tabId){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');['t-home','t-community','t-learn'].forEach(id=>document.getElementById(id).style.display=id===tabId?'':'none');}
+function showTab2(tabId,el){showScreen('s-dash');['t-home','t-community','t-learn'].forEach((id,i)=>{document.getElementById(id).style.display=id===tabId?'':'none';document.querySelectorAll('.tab')[i]?.classList.toggle('active',id===tabId);});setActiveNav(el);}
+function setActiveNav(el){document.querySelectorAll('.bnav-item').forEach(b=>b.classList.remove('active'));if(el)el.classList.add('active');}
+
+// ── FORMAT THOUSANDS ──
+function formatThousands(inp){
+  const raw=inp.value.replace(/[^\d]/g,'');
+  inp.value=raw?Number(raw).toLocaleString('en'):'';
+}
+function parseFormatted(val){return parseInt((val||'0').replace(/[^\d]/g,''))||0;}
+
+// ── GOAL SELECTION ──
+function selectGoal(card){
+  document.querySelectorAll('.goal-card').forEach(c=>c.classList.remove('selected'));
+  card.classList.add('selected');
+  goalSelected=card.dataset.goal;
+  ['habit','house','fire','safety','diversify'].forEach(g=>{
+    const el=document.getElementById('fields-'+g);
+    if(el) el.style.display=g===goalSelected?'':'none';
+  });
+}
+
+// ── EXPENSE MODE ──
+let expMode='monthly';
+function setExpMode(mode){
+  expMode=mode;
+  document.getElementById('toggle-m').classList.toggle('active',mode==='monthly');
+  document.getElementById('toggle-y').classList.toggle('active',mode==='yearly');
+  document.getElementById('exp-label').childNodes[0].textContent=mode==='monthly'?'Monthly expenses ':'Annual expenses ';
+  document.getElementById('exp-suf').textContent=mode==='monthly'?'/mo':'/yr';
+  const inp=document.getElementById('i-expenses');
+  const cur=parseFormatted(inp.value);
+  if(cur){inp.value=mode==='monthly'?Number(Math.round(cur/12)).toLocaleString():Number(cur*12).toLocaleString();}
+  inp.placeholder=mode==='monthly'?'3,000':'36,000';
+}
+
+// ── NAVIGATION ──
+function goS2(){
+  if(!document.getElementById('i-name').value.trim()||!document.getElementById('i-age').value){showToast('Please fill in your name and age');return;}
+  showScreen('s-goal');
+}
+function goS3(){
+  if(!goalSelected){showToast('Please choose a goal');return;}
+  showScreen('s-timeline');
+}
+
+// ── HOUSE PRICES ──
+const HP={Berlin:{1:280000,2:380000,3:520000,'4+':700000},Munich:{1:420000,2:580000,3:800000,'4+':1100000},Hamburg:{1:310000,2:420000,3:570000,'4+':750000},Vienna:{1:290000,2:390000,3:530000,'4+':710000},Zurich:{1:620000,2:850000,3:1100000,'4+':1600000},Amsterdam:{1:450000,2:620000,3:850000,'4+':1150000},London:{1:480000,2:700000,3:1000000,'4+':1500000},Paris:{1:400000,2:560000,3:780000,'4+':1050000},Other:{1:250000,2:350000,3:480000,'4+':650000}};
+function getHouseTarget(){const city=document.getElementById('i-city').value;const beds=document.getElementById('i-beds').value;const base=(HP[city]||HP.Other)[beds]||400000;const sqm=+document.getElementById('i-sqm').value||75;return Math.round(base*(sqm/80)*0.20);}
+
+// ── LAUNCH ──
+function launch(){
+  S.name=document.getElementById('i-name').value.trim()||'You';
+  S.age=+document.getElementById('i-age').value||30;
+  S.monthly=+document.getElementById('i-monthly').value||300;
+  S.goal=goalSelected||'habit';
+  S.buddy=document.getElementById('i-buddy-name').value.trim();
+  S.buddyContact=document.getElementById('i-buddy-contact').value.trim();
+  S.returnRate=7; // default
+
+  // Read goal-specific fields
+  if(S.goal==='habit'){
+    S.invested=parseFormatted(document.getElementById('i-invested').value)||0;
+    S.salaryDay=+document.getElementById('h-salday').value||1;
+    S.expenses=36000;
+    S.retireAge=S.age+3;
+  } else if(S.goal==='house'){
+    S.invested=parseFormatted(document.getElementById('i-invested').value)||0;
+    S.salaryDay=+document.getElementById('house-salday').value||1;
+    S.expenses=36000;
+    S.retireAge=S.age+5;
+  } else if(S.goal==='fire'){
+    S.invested=parseFormatted(document.getElementById('i-invested').value)||0;
+    const expRaw=parseFormatted(document.getElementById('i-expenses').value)||(expMode==='monthly'?3000:36000);
+    S.expenses=expMode==='monthly'?expRaw*12:expRaw;
+    S.retireAge=+document.getElementById('i-retire').value||50;
+    S.salaryDay=+document.getElementById('fire-salday').value||1;
+    S.returnRate=+document.getElementById('i-return-fire').value||7;
+  } else if(S.goal==='safety'){
+    S.invested=parseFormatted(document.getElementById('i-invested').value)||0;
+    const safetyExp=parseFormatted(document.getElementById('safety-expenses').value)||3000;
+    S.expenses=safetyExp*12;
+    S.salaryDay=+document.getElementById('safety-salday').value||1;
+    S.retireAge=S.age+2;
+  } else if(S.goal==='diversify'){
+    S.invested=parseFormatted(document.getElementById('div-invested').value)||0;
+    S.salaryDay=+document.getElementById('div-salday').value||1;
+    S.expenses=36000;
+    S.retireAge=S.age+5;
+  }
+
+  const r=S.returnRate/100/12;
+  let fire,fireLabel,fireSub,fireAge;
+  if(S.goal==='house'){
+    fire=getHouseTarget();
+    const city=document.getElementById('i-city').value;
+    fireLabel='🏡 Down payment target (20%)';
+    fireSub=`Based on average prices in ${city}`;
+    fireAge=S.age+Math.max(1,Math.ceil(Math.log(fire/(S.monthly||1)*r+1)/Math.log(1+r)/12));
+  } else if(S.goal==='fire'){
+    fire=S.expenses*25;
+    fireLabel='🔥 FIRE number (25× annual expenses)';
+    fireSub=`Financial independence · ${S.retireAge-S.age} years away`;
+    fireAge=S.retireAge;
+  } else if(S.goal==='safety'){
+    fire=Math.round(S.expenses/12*9);
+    fireLabel='🛡️ Safety bucket (9 months expenses)';
+    fireSub='Your financial cushion goal';
+    fireAge=S.age+Math.max(1,Math.ceil(Math.log(fire/(S.monthly||1)*r+1)/Math.log(1+r)/12));
+  } else {
+    fire=S.monthly*36;
+    fireLabel='🌱 3-year consistency goal';
+    fireSub='Build the habit — compounding does the rest';
+    fireAge=S.age+3;
+  }
+
+  const years=Math.max(1,fireAge-S.age);
+  const n=years*12;
+  const fv=S.invested*Math.pow(1+r,n)+S.monthly*(Math.pow(1+r,n)-1)/r;
+  const pct=Math.min(100,(S.invested/fire)*100);
+  const n10=120;
+  const fv10=S.invested*Math.pow(1+r,n10)+S.monthly*(Math.pow(1+r,n10)-1)/r;
+  const missOut=Math.max(0,fv10-S.invested);
+
+  const goalBadges={habit:'🌱 Building habit',house:'🏡 House deposit',fire:'🔥 FIRE',safety:'🛡️ Safety bucket',diversify:'📊 Diversifying'};
+  document.getElementById('d-goal-badge').textContent=goalBadges[S.goal]||'🌱';
+  document.getElementById('d-fire-lbl').textContent=fireLabel;
+  document.getElementById('d-fire-num').textContent=fmt(fire);
+  document.getElementById('d-fire-sub').textContent=fireSub;
+  document.getElementById('d-fire-age').textContent='Age '+fireAge;
+  document.getElementById('d-fire-age-sub').textContent=S.goal==='fire'?'Your FIRE age':'Estimated to reach goal';
+  document.getElementById('d-monthly-stat').textContent='€'+S.monthly.toLocaleString();
+  document.getElementById('d-projected').textContent=fmt(Math.round(fv/1000)*1000);
+  document.getElementById('d-invested').textContent=fmt(S.invested);
+  document.getElementById('d-pct').textContent=pct.toFixed(1)+'%';
+  setTimeout(()=>document.getElementById('d-prog').style.width=pct+'%',250);
+  document.getElementById('proj-10yr-val').textContent=fmt(Math.round(fv10/1000)*1000);
+  document.getElementById('proj-monthly-lbl').textContent='€'+S.monthly.toLocaleString();
+  document.getElementById('proj-return-lbl').textContent=S.returnRate+'%';
+  document.getElementById('proj-miss-val').textContent=fmt(Math.round(missOut/1000)*1000);
+
+  checkMilestone(pct);
+  buildProjBars();
+  buildStreak();
+  buildLog();
+  updateBuddy();
+
+  const goalNames={habit:'Build a habit',house:'House down payment',fire:'FIRE',safety:'Safety bucket',diversify:'Diversify'};
+  document.getElementById('s-name').textContent=S.name;
+  document.getElementById('s-age').textContent=S.age;
+  document.getElementById('s-goal-lbl').textContent=goalNames[S.goal]||S.goal;
+  document.getElementById('s-salday').textContent=S.salaryDay+'th';
+  document.getElementById('s-monthly').textContent='€'+S.monthly.toLocaleString()+'/mo';
+  document.getElementById('s-target').textContent=fmt(fire);
+  document.getElementById('s-return').textContent=S.returnRate+'%';
+
+  showScreen('s-dash');
+  showTab2('t-home',document.querySelector('.bnav-item'));
+}
+
+function buildProjBars(){
+  const r=S.returnRate/100/12;
+  const yrs=[1,2,3,5,7,10];
+  const vals=yrs.map(y=>S.invested*Math.pow(1+r,y*12)+S.monthly*(Math.pow(1+r,y*12)-1)/r);
+  const max=Math.max(...vals);
+  document.getElementById('proj-bars').innerHTML=yrs.map((y,i)=>{
+    const h=Math.round((vals[i]/max)*76);
+    return `<div class="proj-bar-wrap"><div class="proj-bar-val">${fmtShort(vals[i])}</div><div class="proj-bar ${y===10?'hi':''}" style="height:${h}px"></div><div class="proj-bar-yr">yr${y}</div></div>`;
+  }).join('');
+}
+
+function buildStreak(){
+  const months=['J','F','M','A','M','J','J','A','S','O','N','D'];
+  const cur=new Date().getMonth();
+  const html=months.map((m,i)=>`<div class="sdot ${i<cur?'done':i===cur?'today':''}">${m}</div>`).join('');
+  document.getElementById('streak-dots').innerHTML=html;
+  document.getElementById('streak-dots2').innerHTML=html;
+  document.getElementById('d-streak-stat').textContent=cur+' mo';
+  document.getElementById('d-streak-badge').textContent=cur+' months';
+  document.getElementById('d-streak-badge2').textContent=cur+' months';
+}
+
+function buildLog(){
+  const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const cur=new Date().getMonth();
+  let html='';
+  for(let i=Math.max(0,cur-3);i<cur;i++)
+    html+=`<div class="log-entry"><div class="log-dot done"></div><div class="log-text">${months[i]} — Invested ✓</div><div class="log-amt done">+€${S.monthly.toLocaleString()}</div></div>`;
+  html+=`<div class="log-entry"><div class="log-dot pending"></div><div class="log-text">${months[cur]} — Pending</div><div class="log-amt pending">€${S.monthly.toLocaleString()}</div></div>`;
+  document.getElementById('log-entries2').innerHTML=html;
+}
+
+function logInvestment(){
+  const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const cur=new Date().getMonth();
+  const pending=document.querySelector('.log-dot.pending');
+  if(pending){
+    pending.classList.replace('pending','done');
+    pending.parentElement.querySelector('.log-text').textContent=months[cur]+' — Invested ✓';
+    const a=pending.parentElement.querySelector('.log-amt');
+    a.classList.replace('pending','done');
+    S.invested+=S.monthly;
+    document.getElementById('d-invested').textContent=fmt(S.invested);
+  }
+  showToast('✓ Investment logged for '+months[cur]+'!');
+}
+
+function updateBuddy(){
+  if(S.buddy){
+    document.getElementById('buddy-display-name').textContent=S.buddy+' 👯';
+    document.getElementById('buddy-status').textContent='Accountability partner · invite sent';
+    document.querySelector('#buddy-row .buddy-btn').textContent='✓ Set';
+    document.getElementById('s-buddy').textContent=S.buddy;
+  }
+}
+
+function checkMilestone(pct){
+  const ms=[{pct:1,title:'🌱 First step taken!',desc:'Every journey starts here.'},{pct:10,title:'🔥 10% milestone!',desc:'The hardest part is starting. You\'ve done it.'},{pct:25,title:'💎 25% of the way!',desc:'Compound interest is working for you.'},{pct:50,title:'⭐ Halfway there!',desc:'50% done. You\'re on the right side of this.'},{pct:75,title:'🚀 Almost there!',desc:'75% — the finish line is in sight.'}];
+  const reached=ms.filter(m=>pct>=m.pct).pop();
+  if(reached){document.getElementById('milestone-banner').style.display='flex';document.getElementById('milestone-title').textContent=reached.title;document.getElementById('milestone-desc').textContent=reached.desc;}
+}
+
+// ── INFO MODALS ──
+const INFO={
+  invested:{title:'What counts as "already invested"?',body:'<p>Include any money you\'ve put into investments that are currently working for you:</p><p>✓ ETFs or index funds<br>✓ Stocks<br>✓ Investment accounts<br>✓ Pension funds (if you contribute voluntarily)</p><p>Don\'t include: savings accounts, cash, or your current account balance.</p>'},
+  'goal-habit':{title:'🌱 Build a habit first',body:'<p>This goal is for you if you\'re just getting started. No pressure to know exactly where you\'re going — the goal is simply to invest something every single month.</p><div class="example"><p>Research shows that the act of investing consistently — even small amounts — builds the financial confidence to invest more over time.</p></div><p>KIN sets you a 3-year consistency target and tracks your streak. That\'s it. Let compounding do the rest.</p>'},
+  'goal-house':{title:'🏡 House down payment',body:'<p>KIN estimates your target down payment based on <strong>average property prices</strong> in the city you select, adjusted for size and number of bedrooms.</p><div class="example"><p>Example: 2-bedroom, 75m² in Berlin → avg. ~€380,000 → 20% deposit = €76,000 target</p></div><p>Most lenders require a <strong>15–20% down payment</strong> to get a mortgage. The remaining 80–85% you borrow from the bank and pay back over 20–30 years.</p><p class="modal-note">⚠️ Prices are estimates based on current market data and vary significantly by neighbourhood. Not financial advice.</p>'},
+  'goal-fire':{title:'🔥 What is FIRE?',body:'<p>FIRE stands for <strong>Financial Independence, Retire Early</strong>. The idea: build up enough invested wealth that you can live off the returns — and never have to work again unless you choose to.</p><div class="example"><p>The most common rule: your FIRE number = your annual expenses × 25. This comes from the "4% rule" — research showing you can withdraw 4% of a portfolio per year indefinitely.</p></div><p>Example: if you spend €40,000/year → FIRE number = €1,000,000</p><p class="modal-note">⚠️ The 4% rule is a guideline, not a guarantee. Actual outcomes depend on market performance, inflation, and your spending.</p>'},
+  'goal-safety':{title:'🛡️ What is a safety bucket?',body:'<p>A safety bucket (also called an emergency fund) is money set aside in a <strong>liquid, low-risk account</strong> — accessible immediately if something goes wrong.</p><div class="example"><p>KIN targets 9 months of living expenses. This covers: job loss, medical emergencies, unexpected repairs, or any major life disruption.</p></div><p>This should typically be in a high-yield savings account — not invested in stocks, because you might need it at any moment and can\'t afford market volatility.</p>'},
+  'goal-diversify':{title:'📊 What is diversification?',body:'<p>Diversification means spreading your money across different types of investments so that if one goes badly, the others cushion the blow.</p><div class="example"><p>"Don\'t put all your eggs in one basket." If you hold only one stock and it crashes, you lose everything. Hold 1,500 stocks and one crash barely moves the needle.</p></div><p>Good diversification = different <strong>asset types</strong> (stocks, bonds, property), different <strong>geographies</strong> (Europe, US, Asia), and different <strong>sectors</strong> (tech, healthcare, energy).</p>'},
+  expenses:{title:'💶 What counts as living expenses?',body:'<p>Include everything you spend to maintain your current lifestyle over a year:</p><p>✓ Rent or mortgage payments<br>✓ Health insurance & other insurance<br>✓ Groceries & food<br>✓ Transport (car, public transport)<br>✓ Utilities (electricity, internet, phone)<br>✓ Subscriptions & memberships<br>✓ Clothing & personal care<br>✓ Eating out & entertainment<br>✓ Holidays & travel<br>✓ Gifts & charity</p><div class="example"><p>If you earn €4,000/month and save €800, your monthly expenses are roughly €3,200. Annual = €38,400.</p></div><p>Being realistic here gives you a more accurate FIRE number and safety bucket target.</p>'},
+  return:{title:'📈 Why 7% as the default?',body:'<p>7% is the commonly cited <strong>average annual return</strong> of a globally diversified stock portfolio (like an MSCI World ETF), adjusted for inflation, over long time horizons (20+ years).</p><div class="example"><p>The S&P 500 has returned ~10% annually before inflation since 1957. After inflation (~3%), that\'s ~7% real return. Global portfolios tend to be slightly lower.</p></div><p>You can adjust this based on your investment mix:</p><p>📉 3–4%: mostly bonds or cash savings<br>📊 5–7%: balanced global ETF portfolio<br>📈 8–12%: higher equity allocation, emerging markets</p><p class="modal-note">⚠️ KIN is not a financial advisor. Past returns do not guarantee future performance. This is for planning purposes only.</p>'}
+};
+
+function openInfo(key){
+  const d=INFO[key];if(!d)return;
+  document.getElementById('info-title').textContent=d.title;
+  document.getElementById('info-body').innerHTML=d.body;
+  openModal('info-modal');
+}
+
+// ── LEARN MODALS ──
+const LEARN={
+  investing:{h:'💡 What is investing?',b:`<p>Investing means putting your money to work so it grows over time — instead of sitting in a bank account losing value to inflation.</p><p>When you invest, you buy an asset (like a share in a company) hoping it'll be worth more in the future. You earn money in two ways:</p><p><strong>1. Capital growth</strong> — the asset increases in value<br><strong>2. Dividends / income</strong> — the asset pays you regularly</p><div class="callout"><p>€10,000 in a savings account at 2%/year → €12,190 after 10 years<br>€10,000 in a diversified ETF at 7%/year → €19,672 after 10 years</p></div><p>The biggest risk of <em>not</em> investing is inflation quietly eroding your savings every year.</p>`},
+  etf:{h:'📦 What is an ETF?',b:`<p>ETF stands for <strong>Exchange-Traded Fund</strong>. Think of it as a basket that holds many investments inside it — you buy one ETF and instantly own a tiny slice of hundreds or thousands of companies.</p><div class="callout"><p>Example: iShares Core MSCI World ETF holds ~1,500 companies across 23 countries. One purchase. Instant diversification.</p></div><p>ETFs are popular because they're:<br>✓ Low cost (typically 0.1–0.5% annual fee)<br>✓ Diversified automatically<br>✓ Transparent (you can see exactly what's inside)<br>✓ Easy to buy (via apps like Trade Republic, Scalable Capital)</p><p>Most KIN users start with a broad global ETF like the MSCI World or FTSE All-World.</p>`},
+  return:{h:'📈 What is a return?',b:`<p>A return is how much your investment grows — expressed as a percentage of what you put in.</p><div class="callout"><p>You invest €1,000. A year later it's worth €1,070. Your return = 7%.</p></div><p>Returns can be:<br><strong>Positive</strong> — your investment grew 🎉<br><strong>Negative</strong> — your investment shrank (this happens — don't panic)<br><strong>Real vs nominal</strong> — "real return" factors in inflation</p><p>Long-term investors care about <strong>average annual returns</strong> over 10–20 years, not short-term ups and downs.</p>`},
+  compound:{h:'⚡ What is compound interest?',b:`<p>Compound interest is when your returns start earning returns. It's the most powerful force in investing.</p><div class="callout"><p>€300/month invested at 7%/year:<br>After 10 years → ~€52,000<br>After 20 years → ~€157,000<br>After 30 years → ~€365,000</p></div><p>Notice how the growth accelerates? That's compounding. In the last 10 years you earn more than in the first 20 combined.</p><p>This is why starting early matters so much more than investing more. Every year you wait is a year of compounding you never get back.</p>`},
+  fire:{h:'🔥 What is FIRE?',b:`<p>FIRE = <strong>Financial Independence, Retire Early</strong>. The goal: build enough wealth that your investment returns cover your living expenses forever.</p><div class="callout"><p>FIRE number = annual expenses × 25<br>Example: €40,000/year expenses → €1,000,000 FIRE number</p></div><p>Once you hit your FIRE number, you can withdraw 4% per year — historically, portfolios survive indefinitely at this withdrawal rate (the "4% rule" from the Trinity Study, 1998).</p><p>FIRE isn't just for the rich. Women who start at 28 investing €400/month can realistically reach FIRE by their late 40s.</p>`},
+  mortgage:{h:'🏡 What is a mortgage?',b:`<p>A mortgage is a loan from a bank used to buy property. You put down a deposit (typically 15–20%) and borrow the rest, paying it back over 20–30 years with interest.</p><div class="callout"><p>Property: €400,000<br>Your deposit (20%): €80,000<br>Mortgage (80%): €320,000<br>Monthly payment at 3.5%: ~€1,600/mo for 25 years</p></div><p>Key terms:<br><strong>LTV</strong> — Loan to Value (how much you borrow vs property value)<br><strong>Fixed rate</strong> — interest rate locked for a set period<br><strong>Variable rate</strong> — rate moves with the market<br><strong>Amortisation</strong> — paying down the principal over time</p>`},
+  diversification:{h:'🎯 What is diversification?',b:`<p>Diversification means spreading your money across many different investments so no single loss can seriously hurt you.</p><div class="callout"><p>"Don't put all your eggs in one basket" — but applied to money.</p></div><p>Good diversification across:<br>✓ <strong>Asset classes</strong>: stocks, bonds, property, cash<br>✓ <strong>Geographies</strong>: US, Europe, Asia, emerging markets<br>✓ <strong>Sectors</strong>: tech, healthcare, consumer, energy<br>✓ <strong>Time</strong>: investing regularly (called "dollar-cost averaging")</p><p>A single global ETF like MSCI World achieves geographic and sector diversification automatically.</p>`},
+  risk:{h:'⚖️ Risk vs return',b:`<p>In investing, risk and return are linked. Higher potential returns = higher potential losses. There's no free lunch.</p><div class="callout"><p>Low risk, low return: savings accounts, government bonds<br>Medium risk, medium return: diversified ETFs, REITs<br>High risk, high return: individual stocks, crypto, emerging markets</p></div><p>Your <strong>risk tolerance</strong> depends on:<br>• How long until you need the money (time horizon)<br>• How you'd feel watching it drop 30%<br>• Your other financial cushions</p><p>For most people with a 10+ year horizon, a globally diversified ETF portfolio is the right balance of risk and return.</p>`}
+};
+
+function openLearn(key){
+  const d=LEARN[key];if(!d)return;
+  document.getElementById('learn-body').innerHTML=`<h3>${d.h}</h3>${d.b}`;
+  openModal('learn-modal');
+}
+
+// ── MODAL HELPERS ──
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+function openBuddyModal(){openModal('buddy-modal');}
+function openFeedback(){window.open('https://tally.so/r/LZkDe1','_blank');}
+
+function saveBuddy(){
+  S.buddy=document.getElementById('m-buddy-name').value.trim();
+  S.buddyContact=document.getElementById('m-buddy-contact').value.trim();
+  closeModal('buddy-modal');
+  updateBuddy();
+  showToast('💌 Invite sent to '+S.buddy+'!');
+}
+
+
+
+// ── QUIZ DUELL ──
+const QUIZ_QUESTIONS = [
+  {q:'What does ETF stand for?',opts:['Exchange Trading Fund','Exchange-Traded Fund','Equity Transfer Fund','European Tax Fund'],correct:1,exp:'ETF = Exchange-Traded Fund. A basket of many investments you can buy and sell like a stock.'},
+  {q:'What is the "4% rule" in FIRE planning?',opts:['Save 4% of your salary every month','You can withdraw 4% of your portfolio annually without running out of money','Invest only in funds with under 4% fees','Your portfolio grows by 4% guaranteed'],correct:1,exp:'The 4% rule suggests you can safely withdraw 4% of your invested portfolio per year — meaning you need 25× your annual expenses to be financially independent.'},
+  {q:'What does "diversification" mean in investing?',opts:['Investing only in one company you trust','Spreading money across different assets to reduce risk','Checking your portfolio every day','Only investing in sustainable companies'],correct:1,exp:'Diversification means spreading your investments across different assets, geographies, and sectors to reduce the impact of any single loss.'},
+  {q:'What is compound interest?',opts:['Interest paid by the government','When your returns start earning returns too','A fee charged by brokers','Interest on your savings account only'],correct:1,exp:'Compound interest is when your investment returns themselves start generating returns — the snowball effect that makes long-term investing so powerful.'},
+  {q:'What is an index fund?',opts:['A fund that actively picks the best stocks','A fund that tracks a market index like the S&P 500','A fund only available to institutional investors','A savings account with index-linked returns'],correct:1,exp:'An index fund passively tracks a market index (like the MSCI World or S&P 500), giving you exposure to all companies in that index at very low cost.'},
+];
+let quizIdx = 2;
+let quizScore = 2;
+
+function answerQuiz(btn, isCorrect) {
+  document.querySelectorAll('.quiz-opt').forEach(b => b.disabled = true);
+  btn.classList.add(isCorrect ? 'correct' : 'wrong');
+  if (!isCorrect) {
+    document.querySelectorAll('.quiz-opt').forEach(b => {
+      if (b !== btn) b.classList.add('correct');
+    });
+  }
+  if (isCorrect) quizScore++;
+  document.getElementById('quiz-my-score').textContent = quizScore + '/3';
+  setTimeout(() => {
+    document.getElementById('quiz-q-wrap').style.display = 'none';
+    const result = document.getElementById('quiz-result');
+    result.style.display = 'block';
+    const q = QUIZ_QUESTIONS[quizIdx];
+    document.getElementById('quiz-result-icon').textContent = isCorrect ? '🎉' : '💡';
+    document.getElementById('quiz-result-text').textContent = isCorrect ? 'Correct! +1 point' : 'Not quite...';
+    document.getElementById('quiz-result-exp').textContent = q.exp;
+  }, 900);
+}
+
+function nextQuizRound() {
+  quizIdx = (quizIdx + 1) % QUIZ_QUESTIONS.length;
+  quizScore = 0;
+  const q = QUIZ_QUESTIONS[quizIdx];
+  document.getElementById('quiz-q-text').textContent = q.q;
+  document.getElementById('quiz-my-score').textContent = '0/3';
+  const optsEl = document.getElementById('quiz-options');
+  optsEl.innerHTML = q.opts.map((o, i) =>
+    `<button class="quiz-opt" onclick="answerQuiz(this,${i===q.correct})">${o}</button>`
+  ).join('');
+  document.getElementById('quiz-result').style.display = 'none';
+  document.getElementById('quiz-q-wrap').style.display = 'block';
+  const streakEl = document.getElementById('quiz-streak-num');
+  streakEl.textContent = +streakEl.textContent + 1;
+}
+
+function challengeFriend() {
+  showToast('⚡ Challenge link copied — send it to a friend!');
+}
+
+// ── SOCIAL ──
+function shareAction(type){
+  let text='';
+  const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const cur=new Date().getMonth();
+  if(type==='invested') text=`📢 I just made my monthly investment with KIN! €${S.monthly.toLocaleString()} in ${months[cur]}. Building wealth one month at a time 💪 #KIN #WomenInvest`;
+  else if(type==='streak') text=`🔥 ${new Date().getMonth()} month investing streak on KIN! Every month, without fail. Who else is building the habit? #KIN #InvestingHabit`;
+  else text=`✦ My KIN Financial Independence Card\n\nAge: ${S.age} | Monthly: €${S.monthly.toLocaleString()}\nTarget: ${document.getElementById('d-fire-num').textContent}\n10-year projection: ${document.getElementById('proj-10yr-val').textContent}\n\nBuilding wealth with KIN 🌿 @joinkin`;
+  navigator.clipboard.writeText(text).catch(()=>{});
+  showToast('✦ Copied to clipboard!');
+}
+function react(btn){btn.classList.toggle('reacted');showToast(btn.classList.contains('reacted')?'🎉 Sent!':'Removed');}
+function nudge(btn){btn.textContent='✓ Sent!';btn.classList.add('reacted');showToast('👋 Nudge sent!');}
+function toggleChallenge(btn){const j=btn.classList.contains('joined');btn.classList.toggle('joined');btn.textContent=j?'Join':'✓ Done';showToast(j?'Left challenge':'🔥 Challenge joined!');}
+
+// ── UTILS ──
+function fmt(n){if(n>=1000000)return '€'+(n/1000000).toFixed(1)+'M';if(n>=1000)return '€'+Math.round(n/1000).toLocaleString()+'k';return '€'+Math.round(n);}
+function fmtShort(n){if(n>=1000000)return (n/1000000).toFixed(1)+'M';if(n>=1000)return Math.round(n/1000)+'k';return Math.round(n);}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
+</script>
+</body>
+</html>
